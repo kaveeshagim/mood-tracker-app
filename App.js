@@ -6,6 +6,9 @@ import {
   StyleSheet,
   FlatList,
   Alert,
+  LayoutAnimation,
+  Platform,
+  UIManager,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -15,6 +18,15 @@ const moods = ["😃", "😐", "😢", "😡"];
 export default function App() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [moodHistory, setMoodHistory] = useState([]);
+
+  useEffect(() => {
+    if (
+      Platform.OS === "android" &&
+      UIManager.setLayoutAnimationEnabledExperimental
+    ) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }, []);
 
   useEffect(() => {
     loadMoods();
@@ -36,6 +48,7 @@ export default function App() {
       const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
       const newMood = { date: today, mood: selectedMood };
       const updatedMoods = [newMood, ...moodHistory];
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setMoodHistory(updatedMoods);
       setSelectedMood(null); // reset selection
 
@@ -60,6 +73,9 @@ export default function App() {
           text: "Yes, Clear",
           onPress: async () => {
             try {
+              LayoutAnimation.configureNext(
+                LayoutAnimation.Presets.easeInEaseOut
+              );
               await AsyncStorage.removeItem(STORAGE_KEY);
               setMoodHistory([]);
             } catch (error) {
