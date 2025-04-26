@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import theme from "./theme";
 
 export default StyleSheet.create({
   container: {
@@ -53,7 +54,7 @@ export default StyleSheet.create({
     paddingVertical: 4,
   },
   clearButton: {
-    backgroundColor: "#ff3b30",
+    backgroundColor: theme.danger,
     padding: 12,
     borderRadius: 10,
     alignItems: "center",
@@ -71,8 +72,8 @@ export default StyleSheet.create({
   },
 
   selectedEmojiButton: {
-    borderColor: "#007bff",
-    backgroundColor: "#e0f0ff",
+    borderColor: theme.navyblue,
+    backgroundColor: theme.skyblue,
   },
   emoji: {
     fontSize: 30,
@@ -85,7 +86,7 @@ export default StyleSheet.create({
     paddingBottom: 50,
   },
   moodCard: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.skyblue,
     padding: 20,
     borderRadius: 15,
     marginBottom: 10,
@@ -98,7 +99,7 @@ export default StyleSheet.create({
     elevation: 5, // for Android shadow
   },
   moodEmoji: {
-    fontSize: 40,
+    fontSize: 28,
   },
   subtitle: {
     fontSize: 18,
@@ -181,7 +182,7 @@ export default StyleSheet.create({
   enterButton: {
     width: "100%",
     padding: 15,
-    backgroundColor: "#567c8d",
+    backgroundColor: theme.navy,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -190,5 +191,16 @@ export default StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  splashContainer: {
+    flex: 1,
+    backgroundColor: theme.skyblue,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logo: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: theme.navyblue,
   },
 });
