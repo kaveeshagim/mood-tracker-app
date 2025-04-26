@@ -2,15 +2,21 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
-  StyleSheet,
-  FlatList,
+  Modal,
   Alert,
   LayoutAnimation,
   Platform,
   UIManager,
+  ScrollView,
+  Button,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import styles from "./AppStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import "react-native-reanimated";
+import Animated, { FadeInUp } from "react-native-reanimated";
 
 const STORAGE_KEY = "@mood_history";
 const emojiOptions = [
@@ -29,6 +35,10 @@ const emojiOptions = [
 export default function App() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [moodHistory, setMoodHistory] = useState([]);
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [customMoodText, setCustomMoodText] = useState("");
+  const [username, setUsername] = useState(null);
+  const [storedUsername, setStoredUsername] = useState(null);
 
   useEffect(() => {
     if (
@@ -38,6 +48,22 @@ export default function App() {
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
   }, []);
+
+  useEffect(() => {
+    const loadUsername = async () => {
+      const savedName = await AsyncStorage.getItem("username");
+      if (savedName) {
+        setStoredUsername(savedName);
+      }
+    };
+    loadUsername();
+  }, []);
+
+  const handleSavedUsername = async () => {
+    await AsyncStorage.setItem("username", username);
+    setStoredUsername(username);
+    setUsername("");
+  };
 
   useEffect(() => {
     loadMoods();
@@ -62,6 +88,7 @@ export default function App() {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setMoodHistory(updatedMoods);
       setSelectedMood(null); // reset selection
+      setCustomMoodText("");
 
       try {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMoods));
@@ -101,130 +128,131 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>How are you feeling today?</Text>
-
-      <View style={styles.emojiContainer}>
-        {emojiOptions.map((emoji, index) => (
+    // <View style={styles.container}>
+    <LinearGradient colors={["#f5efeb", "#c8d9e6"]} style={styles.container}>
+      {!storedUsername ? (
+        <>
+          <Text style={styles.title}>Welcome to Mood Tracker!</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your name..."
+            value={username}
+            onChangeText={setUsername}
+          />
           <TouchableOpacity
-            key={index}
-            onPress={() => setSelectedMood(emoji)}
-            style={[
-              styles.emojiButton,
-              selectedMood === emoji && styles.selectedEmojiButton,
-            ]}
+            style={styles.enterButton}
+            onPress={handleSavedUsername}
           >
-            <Text style={styles.moodText}>{emoji}</Text>
+            <Text style={styles.enterButtonText}>Enter</Text>
           </TouchableOpacity>
-        ))}
-      </View>
+        </>
+      ) : (
+        <>
+          <Text style={styles.subtitle}>How are you feeling today? 💬</Text>
 
-      <TouchableOpacity
-        onPress={handleSaveMood}
-        style={[
-          styles.saveButton,
-          { backgroundColor: selectedMood ? "#007aff" : "#ccc" },
-        ]}
-        disabled={!selectedMood}
-      >
-        <Text style={styles.saveButtonText}>Save Mood</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleClearHistory} style={styles.clearButton}>
-        <Text style={styles.clearButtonText}>Clear Mood History</Text>
-      </TouchableOpacity>
+          <View style={styles.emojiContainer}>
+            {emojiOptions.map((emoji, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => setSelectedMood(emoji)}
+                style={[
+                  styles.emojiButton,
+                  selectedMood === emoji && styles.selectedEmojiButton,
+                ]}
+              >
+                <Text style={styles.moodText}>{emoji}</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={[
+                styles.emojiButton,
+                selectedMood === customMoodText && styles.selectedEmojiButton,
+              ]}
+              onPress={() => setShowCustomInput(true)}
+            >
+              <Text style={styles.moodText}>
+                {customMoodText ? customMoodText : "➕"}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
-      <Text style={styles.historyTitle}>Mood History</Text>
+          <Modal
+            visible={showCustomInput}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setShowCustomInput(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                {/* Close Button */}
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setShowCustomInput(false)}
+                >
+                  <Text style={styles.closeButtonText}>❌</Text>
+                </TouchableOpacity>
 
-      <FlatList
-        data={moodHistory}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Text style={styles.historyItem}>
-            {item.date} - {item.mood}
-          </Text>
-        )}
-      />
-    </View>
+                {/* Input Field */}
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter mood or emoji..."
+                  value={customMoodText}
+                  onChangeText={setCustomMoodText}
+                />
+
+                {/* Save Button */}
+                <TouchableOpacity
+                  style={styles.saveCustomMoodButton}
+                  onPress={() => {
+                    setSelectedMood(customMoodText);
+                    setShowCustomInput(false);
+                    setCustomMoodText(customMoodText);
+                  }}
+                >
+                  <Text style={styles.saveCustomMoodButtonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          <TouchableOpacity
+            onPress={handleSaveMood}
+            style={[
+              styles.saveButton,
+              { backgroundColor: selectedMood ? "#007aff" : "#ccc" },
+            ]}
+            disabled={!selectedMood}
+          >
+            <Text style={styles.saveButtonText}>Save Mood</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleClearHistory}
+            style={styles.clearButton}
+          >
+            <Text style={styles.clearButtonText}>Clear Mood History</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.historyTitle}>Mood History</Text>
+
+          <ScrollView
+            style={styles.moodHistoryContainer}
+            contentContainerStyle={styles.moodHistoryContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {moodHistory.map((moodItem, index) => (
+              <Animated.View
+                key={index}
+                style={styles.moodCard}
+                entering={FadeInUp.duration(500)}
+              >
+                <Text style={styles.moodEmoji}>{moodItem.mood}</Text>
+                <Text style={styles.moodDate}>{moodItem.date}</Text>
+              </Animated.View>
+            ))}
+          </ScrollView>
+        </>
+      )}
+    </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 60,
-    paddingHorizontal: 20,
-    backgroundColor: "#fefefe",
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  moodContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-  },
-  moodButton: {
-    padding: 10,
-    borderRadius: 10,
-    backgroundColor: "#eee",
-  },
-  selectedMood: {
-    backgroundColor: "#cdeffd",
-  },
-  moodText: {
-    fontSize: 32,
-  },
-  saveButton: {
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  saveButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  historyTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-    fontWeight: "bold",
-  },
-  historyItem: {
-    fontSize: 16,
-    paddingVertical: 4,
-  },
-  clearButton: {
-    backgroundColor: "#ff3b30",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  clearButtonText: {
-    color: "white",
-    fontSize: 16,
-  },
-  emojiContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  emojiButton: {
-    padding: 10,
-    margin: 5,
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 10,
-  },
-  selectedEmojiButton: {
-    borderColor: "#007bff",
-    backgroundColor: "#e0f0ff",
-  },
-  emoji: {
-    fontSize: 30,
-  },
-});
