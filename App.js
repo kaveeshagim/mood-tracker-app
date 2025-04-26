@@ -13,7 +13,18 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const STORAGE_KEY = "@mood_history";
-const moods = ["😃", "😐", "😢", "😡"];
+const emojiOptions = [
+  "😊",
+  "😢",
+  "😡",
+  "😱",
+  "😍",
+  "😴",
+  "🤔",
+  "🤩",
+  "😭",
+  "😎",
+];
 
 export default function App() {
   const [selectedMood, setSelectedMood] = useState(null);
@@ -93,22 +104,29 @@ export default function App() {
     <View style={styles.container}>
       <Text style={styles.title}>How are you feeling today?</Text>
 
-      <View style={styles.moodContainer}>
-        {moods.map((mood, index) => (
+      <View style={styles.emojiContainer}>
+        {emojiOptions.map((emoji, index) => (
           <TouchableOpacity
             key={index}
-            onPress={() => setSelectedMood(mood)}
+            onPress={() => setSelectedMood(emoji)}
             style={[
-              styles.moodButton,
-              selectedMood === mood && styles.selectedMood,
+              styles.emojiButton,
+              selectedMood === emoji && styles.selectedEmojiButton,
             ]}
           >
-            <Text style={styles.moodText}>{mood}</Text>
+            <Text style={styles.moodText}>{emoji}</Text>
           </TouchableOpacity>
         ))}
       </View>
 
-      <TouchableOpacity onPress={handleSaveMood} style={styles.saveButton}>
+      <TouchableOpacity
+        onPress={handleSaveMood}
+        style={[
+          styles.saveButton,
+          { backgroundColor: selectedMood ? "#007aff" : "#ccc" },
+        ]}
+        disabled={!selectedMood}
+      >
         <Text style={styles.saveButtonText}>Save Mood</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleClearHistory} style={styles.clearButton}>
@@ -159,15 +177,15 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
   saveButton: {
-    backgroundColor: "#007aff",
-    padding: 12,
+    padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 10,
   },
   saveButtonText: {
     color: "white",
     fontSize: 16,
+    fontWeight: "bold",
   },
   historyTitle: {
     fontSize: 18,
@@ -188,5 +206,25 @@ const styles = StyleSheet.create({
   clearButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  emojiContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  emojiButton: {
+    padding: 10,
+    margin: 5,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    borderRadius: 10,
+  },
+  selectedEmojiButton: {
+    borderColor: "#007bff",
+    backgroundColor: "#e0f0ff",
+  },
+  emoji: {
+    fontSize: 30,
   },
 });
