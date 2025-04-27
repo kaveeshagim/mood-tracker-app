@@ -9,6 +9,7 @@ import CustomSplashScreen from "./screens/SplashScreen";
 import HomeScreen from "./screens/HomeScreen";
 import MoodHistoryScreen from "./screens/MoodHistoryScreen";
 import WelcomeScreen from "./screens/WelcomeScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
@@ -27,6 +28,8 @@ function MainTabs() {
             iconName = "home-outline";
           } else if (route.name === "MoodHistory") {
             iconName = "time-outline";
+          } else if (route.name === "Profile") {
+            iconName = "person-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -37,6 +40,7 @@ function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="MoodHistory" component={MoodHistoryScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }

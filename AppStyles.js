@@ -207,7 +207,7 @@ export default StyleSheet.create({
   logo: {
     fontSize: 32,
     fontWeight: "bold",
-    color: theme.navyblue,
+    color: theme.teal,
   },
   buttonRow: {
     display: "flex",
@@ -216,5 +216,30 @@ export default StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
     gap: 10,
+  },
+  profileContainer: {
+    flex: 1,
+    backgroundColor: theme.skyblue,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    marginTop: 50,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: theme.teal,
+  },
+  moodSummary: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "center",
   },
 });

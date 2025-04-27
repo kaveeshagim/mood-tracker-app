@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import styles from "../AppStyles";
 import * as SplashScreen from "expo-splash-screen";
 import { LinearGradient } from "expo-linear-gradient";
+import theme from "../theme";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,7 +26,10 @@ export default function CustomSplashScreen() {
   }, []);
 
   return (
-    <LinearGradient colors={["#f5efeb", "#c8d9e6"]} style={styles.container}>
+    <LinearGradient
+      colors={[theme.beige, theme.skyblue]}
+      style={styles.container}
+    >
       <Animated.Text style={[styles.logo, { opacity }]}>
         🌟 Mood Tracker 🌟
       </Animated.Text>

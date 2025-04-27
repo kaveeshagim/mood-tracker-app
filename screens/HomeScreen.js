@@ -38,6 +38,7 @@ export default function HomeScreen({ navigation }) {
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customMoodText, setCustomMoodText] = useState("");
   const { saveMood } = useContext(MoodContext);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     if (
@@ -46,6 +47,11 @@ export default function HomeScreen({ navigation }) {
     ) {
       UIManager.setLayoutAnimationEnabledExperimental(true);
     }
+  }, []);
+
+  useEffect(() => {
+    const storedUser = AsyncStorage.getItem("username");
+    setUsername(storedUser);
   }, []);
 
   const handleSaveMood = async () => {
@@ -83,7 +89,7 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.subtitle}>How are you feeling today?</Text>
+      <Text style={styles.subtitle}>How are you feeling today {username}?</Text>
 
       <View style={styles.emojiContainer}>
         {emojiOptions.map((emoji, index) => (

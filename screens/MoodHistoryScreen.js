@@ -22,7 +22,10 @@ import { useContext } from "react";
 export default function MoodHistoryScreen() {
   const { moodHistory, clearMoodHistory } = useContext(MoodContext);
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[theme.beige, theme.skyblue]}
+      style={styles.container}
+    >
       <Text style={styles.historyTitle}>Mood History</Text>
       <TouchableOpacity
         onPress={clearMoodHistory}
@@ -43,6 +46,6 @@ export default function MoodHistoryScreen() {
           </View>
         ))}
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }
