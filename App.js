@@ -46,13 +46,6 @@ function MainTabs() {
 }
 
 export default function App() {
-  useEffect(() => {
-    const clearStorage = async () => {
-      await AsyncStorage.removeItem("username"); // 👈 removes only the username key
-      console.log("Storage cleared!");
-    };
-    clearStorage();
-  }, []);
   return (
     <MoodProvider>
       <NavigationContainer>

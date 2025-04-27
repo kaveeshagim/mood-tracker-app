@@ -29,9 +29,6 @@ export default StyleSheet.create({
   selectedMood: {
     backgroundColor: "#cdeffd",
   },
-  moodText: {
-    fontSize: 32,
-  },
   saveButton: {
     padding: 15,
     borderRadius: 10,
@@ -182,9 +179,6 @@ export default StyleSheet.create({
     alignItems: "center",
     margin: 5,
   },
-  moodText: {
-    fontSize: 24,
-  },
   enterButton: {
     width: "100%",
     padding: 15,
@@ -254,5 +248,24 @@ export default StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  selectedDate: {
+    fontSize: 24,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  moodItem: {
+    marginTop: 10,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  moodTime: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  moodText: {
+    fontSize: 16,
+    color: "#666",
   },
 });

@@ -7,7 +7,7 @@ export const MoodContext = createContext();
 const STORAGE_KEY = "@mood_history";
 
 export const MoodProvider = ({ children }) => {
-  const [moodHistory, setMoodHistory] = useState([]);
+  const [moodHistory, setMoodHistory] = useState({});
 
   useEffect(() => {
     loadMoods();
@@ -25,9 +25,20 @@ export const MoodProvider = ({ children }) => {
   };
 
   const saveMood = async (mood) => {
-    const today = new Date().toISOString().split("T")[0];
-    const newMood = { date: today, mood };
-    const updatedMoods = [newMood, ...moodHistory];
+    const today = new Date();
+    const date = today.toISOString().split("T")[0]; // YYYY-MM-DD format
+    const time = today.toISOString().split("T")[1].split(".")[0]; // HH:MM:SS format
+
+    // Create a new mood object with date, mood, and time
+    const newMood = { mood, time };
+
+    const updatedMoods = { ...moodHistory };
+    if (updatedMoods[date]) {
+      updatedMoods[date].push(newMood);
+    } else {
+      updatedMoods[date] = [newMood];
+    }
+
     setMoodHistory(updatedMoods);
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMoods));
@@ -50,7 +61,7 @@ export const MoodProvider = ({ children }) => {
           onPress: async () => {
             try {
               await AsyncStorage.removeItem(STORAGE_KEY);
-              setMoodHistory([]);
+              setMoodHistory({});
             } catch (error) {
               console.log("Failed to clear mood history: ", error);
             }

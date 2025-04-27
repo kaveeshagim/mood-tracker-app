@@ -11,16 +11,47 @@ import {
   UIManager,
   ScrollView,
   Button,
+  FlatList,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import styles from "../AppStyles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import theme from "../theme";
 import { MoodContext } from "../context/MoodContext";
 import { useContext } from "react";
+import { Calendar } from "react-native-calendars";
 
 export default function MoodHistoryScreen() {
   const { moodHistory, clearMoodHistory } = useContext(MoodContext);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleDateSelect = (day) => {
+    setSelectedDate(day.dateString);
+  };
+
+  const renderMoodForDay = () => {
+    if (!selectedDate || !moodHistory[selectedDate]) {
+      return <Text>No moods recorded for this day.</Text>;
+    }
+
+    const moods = moodHistory[selectedDate];
+
+    return (
+      <FlatList
+        data={moods}
+        renderItem={({ item }) => (
+          <View style={styles.moodItem}>
+            <Text style={styles.moodTime}>{item.time}</Text>{" "}
+            {/* Display mood time */}
+            <Text style={styles.moodText}>{item.mood}</Text>{" "}
+            {/* Display mood */}
+          </View>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    );
+  };
+
   return (
     <LinearGradient
       colors={[theme.beige, theme.skyblue]}
@@ -39,12 +70,21 @@ export default function MoodHistoryScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {moodHistory.map((moodItem, index) => (
-          <View key={index} style={styles.moodCard}>
-            <Text style={styles.moodEmoji}>{moodItem.mood}</Text>
-            <Text style={styles.moodDate}>{moodItem.date}</Text>
+        <Calendar
+          markedDates={Object.keys(moodHistory).reduce((acc, date) => {
+            acc[date] = { selected: true, marked: true, dotColor: "blue" }; // Mark days with moods
+            return acc;
+          }, {})}
+          onDayPress={handleDateSelect}
+          monthFormat={"yyyy MM"}
+        />
+
+        {selectedDate && (
+          <View>
+            <Text style={styles.selectedDate}>{selectedDate}</Text>
+            {renderMoodForDay()}
           </View>
-        ))}
+        )}
       </ScrollView>
     </LinearGradient>
   );
