@@ -1,10 +1,17 @@
-// ProfileScreen.js
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, Button } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Button,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import styles from "../AppStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
+import theme from "../theme";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
@@ -30,21 +37,85 @@ export default function ProfileScreen() {
     loadUserData();
   }, []);
 
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        onPress: async () => {
+          await AsyncStorage.removeItem("username");
+          navigation.navigate("Welcome");
+        },
+      },
+    ]);
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      "Delete Account",
+      "Are you sure you want to delete your account?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          onPress: async () => {
+            // Add logic to delete the account from your backend (if applicable)
+            await AsyncStorage.removeItem("username");
+            navigation.navigate("Welcome");
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <LinearGradient
-      colors={["#f5efeb", "#c8d9e6"]}
+      colors={[theme.beige, theme.skyblue]}
       style={styles.profileContainer}
     >
       <Image
         source={{ uri: user.profilePicture }}
         style={styles.profileImage}
       />
-      <Text style={styles.name}>{user.name}</Text>
+      <Text style={styles.name}>{user.name || "Loading..."}</Text>
 
-      <Button
-        title="Edit Profile"
-        onPress={() => navigation.navigate("EditProfile")} // Optional: Navigate to an edit profile screen
-      />
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={() => navigation.navigate("EditProfile")} // Navigate to EditProfile screen
+      >
+        <Text style={styles.buttonText}>Edit Profile</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={() => navigation.navigate("Settings")} // Navigate to Settings screen
+      >
+        <Text style={styles.buttonText}>Settings</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={() => navigation.navigate("TermsAndConditions")} // Navigate to Terms and Conditions screen
+      >
+        <Text style={styles.buttonText}>Terms and Conditions</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.profileButton} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.profileButton}
+        onPress={handleDeleteAccount}
+      >
+        <Text style={styles.buttonText}>Delete Account</Text>
+      </TouchableOpacity>
     </LinearGradient>
   );
 }

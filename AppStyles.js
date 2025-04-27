@@ -223,7 +223,6 @@ export default StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
-    marginTop: 50,
   },
   profileImage: {
     width: 120,
@@ -231,15 +230,29 @@ export default StyleSheet.create({
     borderRadius: 60,
     marginBottom: 20,
   },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
   name: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
-    color: theme.teal,
-  },
-  moodSummary: {
-    fontSize: 16,
     marginBottom: 20,
-    textAlign: "center",
+  },
+  profileButton: {
+    width: "80%",
+    padding: 15,
+    marginVertical: 10,
+    backgroundColor: theme.teal,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
