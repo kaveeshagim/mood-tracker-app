@@ -12,8 +12,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import theme from "../theme";
 import { useNavigation } from "@react-navigation/native";
 
-export default function WelcomeScreen() {
-  const navigation = useNavigation();
+export default function WelcomeScreen({ navigation }) {
+  // const navigation = useNavigation();
   const [username, setUsername] = useState(null);
   const [storedUsername, setStoredUsername] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +23,7 @@ export default function WelcomeScreen() {
       const savedName = await AsyncStorage.getItem("username");
       if (savedName) {
         setStoredUsername(savedName);
-        navigation.replace("Home");
+        navigation.replace("Main");
       } else {
         setIsLoading(false);
       }
@@ -35,7 +35,7 @@ export default function WelcomeScreen() {
     await AsyncStorage.setItem("username", username);
     setStoredUsername(username);
     setUsername("");
-    navigation.replace("Home");
+    navigation.replace("Main");
   };
 
   if (isLoading) {
@@ -73,6 +73,27 @@ export default function WelcomeScreen() {
           <Text style={styles.subtitle}>How are you feeling today? 💬</Text>
         </>
       )}
+
+      {/* {__DEV__ && (
+        <TouchableOpacity
+          style={{
+            marginTop: 20,
+            padding: 10,
+            backgroundColor: "rgba(255, 0, 0, 0.2)",
+            borderRadius: 5,
+          }}
+          onLongPress={async () => {
+            await AsyncStorage.removeItem("username");
+            setStoredUsername(null);
+            console.log("Dev Reset Done!");
+            alert("App reset! Reload to see changes.");
+          }}
+        >
+          <Text style={{ color: "red", textAlign: "center" }}>
+            Long Press to Reset
+          </Text>
+        </TouchableOpacity>
+      )} */}
     </LinearGradient>
   );
 }
