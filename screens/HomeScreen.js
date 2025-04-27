@@ -16,6 +16,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import styles from "../AppStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import theme from "../theme";
+import { MoodContext } from "../context/MoodContext";
+import { useContext } from "react";
 
 const STORAGE_KEY = "@mood_history";
 const emojiOptions = [
@@ -33,9 +35,9 @@ const emojiOptions = [
 
 export default function HomeScreen({ navigation }) {
   const [selectedMood, setSelectedMood] = useState(null);
-  const [moodHistory, setMoodHistory] = useState([]);
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [customMoodText, setCustomMoodText] = useState("");
+  const { saveMood } = useContext(MoodContext);
 
   useEffect(() => {
     if (
@@ -46,60 +48,31 @@ export default function HomeScreen({ navigation }) {
     }
   }, []);
 
-  useEffect(() => {
-    loadMoods();
-  }, []);
-
-  const loadMoods = async () => {
-    try {
-      const storedMoods = await AsyncStorage.getItem(STORAGE_KEY);
-      if (storedMoods !== null) {
-        setMoodHistory(JSON.parse(storedMoods));
-      }
-    } catch (error) {
-      console.log("Failed to load moods: ", error);
-    }
-  };
-
   const handleSaveMood = async () => {
     if (selectedMood) {
-      const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-      const newMood = { date: today, mood: selectedMood };
-      const updatedMoods = [newMood, ...moodHistory];
-      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-      setMoodHistory(updatedMoods);
+      await saveMood(selectedMood);
       setSelectedMood(null); // reset selection
       setCustomMoodText("");
-
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMoods));
-      } catch (error) {
-        console.log("Failed to save mood: ", error);
-      }
     }
   };
 
-  const handleClearHistory = async () => {
+  const handleClearMood = async () => {
     Alert.alert(
-      "Clear Mood History",
-      "Are you sure you want to delete all your moods?",
+      "Clear Mood",
+      "Are you sure you want to delete this mood?",
       [
         {
           text: "Cancel",
           style: "cancel",
         },
         {
-          text: "Yes, Clear",
+          text: "Yes, Delete",
           onPress: async () => {
-            try {
-              LayoutAnimation.configureNext(
-                LayoutAnimation.Presets.easeInEaseOut
-              );
-              await AsyncStorage.removeItem(STORAGE_KEY);
-              setMoodHistory([]);
-            } catch (error) {
-              console.log("Failed to clear mood history: ", error);
-            }
+            // LayoutAnimation.configureNext(
+            //   LayoutAnimation.Presets.easeInEaseOut
+            // );
+            setSelectedMood(null); // reset selection
+            setCustomMoodText("");
           },
           style: "destructive",
         },
@@ -109,8 +82,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   return (
-    // <View style={styles.container}>
-    <LinearGradient colors={["#f5efeb", "#c8d9e6"]} style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.subtitle}>How are you feeling today?</Text>
 
       <View style={styles.emojiContainer}>
@@ -147,7 +119,6 @@ export default function HomeScreen({ navigation }) {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            {/* Close Button */}
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setShowCustomInput(false)}
@@ -155,7 +126,6 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.closeButtonText}>❌</Text>
             </TouchableOpacity>
 
-            {/* Input Field */}
             <TextInput
               style={styles.input}
               placeholder="Enter mood or emoji..."
@@ -163,7 +133,6 @@ export default function HomeScreen({ navigation }) {
               onChangeText={setCustomMoodText}
             />
 
-            {/* Save Button */}
             <TouchableOpacity
               style={styles.saveCustomMoodButton}
               onPress={() => {
@@ -178,35 +147,31 @@ export default function HomeScreen({ navigation }) {
         </View>
       </Modal>
 
-      <TouchableOpacity
-        onPress={handleSaveMood}
-        style={[
-          styles.saveButton,
-          { backgroundColor: selectedMood ? theme.navy : theme.disabled },
-        ]}
-        disabled={!selectedMood}
-      >
-        <Text style={styles.saveButtonText}>Save Mood</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleClearHistory} style={styles.clearButton}>
-        <Text style={styles.clearButtonText}>Clear Mood History</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          onPress={handleSaveMood}
+          style={[
+            styles.saveButton,
+            { backgroundColor: selectedMood ? theme.navy : theme.disabled },
+          ]}
+          disabled={!selectedMood}
+        >
+          <Text style={styles.saveButtonText}>Save Mood</Text>
+        </TouchableOpacity>
 
-      <Text style={styles.historyTitle}>Mood History</Text>
-
-      <ScrollView
-        style={styles.moodHistoryContainer}
-        contentContainerStyle={styles.moodHistoryContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        {moodHistory.map((moodItem, index) => (
-          <View key={index} style={styles.moodCard}>
-            <Text style={styles.moodEmoji}>{moodItem.mood}</Text>
-            <Text style={styles.moodDate}>{moodItem.date}</Text>
-          </View>
-        ))}
-      </ScrollView>
-    </LinearGradient>
+        <TouchableOpacity
+          onPress={handleClearMood}
+          style={[
+            styles.clearButton,
+            {
+              backgroundColor: selectedMood ? theme.danger : theme.disabled,
+            },
+          ]}
+          disabled={!selectedMood}
+        >
+          <Text style={styles.clearButtonText}>Clear Mood</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }

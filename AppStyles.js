@@ -4,12 +4,11 @@ import theme from "./theme";
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: theme.beige,
     alignItems: "center",
     justifyContent: "center",
     padding: 20,
     marginTop: 50,
-    backgroundColor: "#f7f7f7",
   },
   title: {
     fontSize: 28,
@@ -54,15 +53,22 @@ export default StyleSheet.create({
     paddingVertical: 4,
   },
   clearButton: {
-    backgroundColor: theme.danger,
-    padding: 12,
+    padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 10,
+  },
+  clearHistoryButton: {
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginBottom: 10,
+    backgroundColor: theme.danger,
   },
   clearButtonText: {
     color: "white",
     fontSize: 16,
+    fontWeight: "bold",
   },
   emojiContainer: {
     flexDirection: "row",
@@ -202,5 +208,13 @@ export default StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     color: theme.navyblue,
+  },
+  buttonRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 20,
+    gap: 10,
   },
 });

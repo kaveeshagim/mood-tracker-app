@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
+import { MoodProvider } from "./context/MoodContext";
 import CustomSplashScreen from "./screens/SplashScreen";
 import HomeScreen from "./screens/HomeScreen";
 import MoodHistoryScreen from "./screens/MoodHistoryScreen";
@@ -49,21 +50,23 @@ export default function App() {
     clearStorage();
   }, []);
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Splash"
-        screenOptions={{
-          headerShown: false, // optional: hides the header bar
-        }}
-      >
-        <Stack.Screen name="Splash" component={CustomSplashScreen} />
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen
-          name="Main"
-          component={MainTabs}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <MoodProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Splash"
+          screenOptions={{
+            headerShown: false, // optional: hides the header bar
+          }}
+        >
+          <Stack.Screen name="Splash" component={CustomSplashScreen} />
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen
+            name="Main"
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </MoodProvider>
   );
 }

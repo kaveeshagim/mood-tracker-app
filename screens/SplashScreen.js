@@ -20,7 +20,7 @@ export default function CustomSplashScreen() {
       setTimeout(async () => {
         await SplashScreen.hideAsync();
         navigation.replace("Welcome");
-      }, 4000);
+      }, 2000);
     });
   }, []);
 
